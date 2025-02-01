@@ -1,0 +1,2 @@
+confluent-kafka==2.8.0
+pyModeS==2.19
