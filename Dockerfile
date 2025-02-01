@@ -7,6 +7,7 @@ WORKDIR /usr/src/app
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY run.py .
+COPY adsb2kafka.py .
 
-CMD [ "python", "./run.py" ]
+ENTRYPOINT ["python", "-m", "adsb2kafka"]
+CMD []
