@@ -9,6 +9,7 @@ message AirbornePosition {
   uint32 source_id = 1; // Metadata
   double latitude = 2;
   double longitude = 3;
+  int32 altitude = 4;
 }
 
 message AirborneVelocity {
