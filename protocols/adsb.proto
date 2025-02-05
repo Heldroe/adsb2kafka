@@ -1,6 +1,32 @@
 syntax = "proto3";
 
 message ADSBFrame {
-  uint32 source_id = 1;
+  uint32 source_id = 1; // Metadata
   bytes frame_data = 2; // Frame data, expected to be 14 bytes
+}
+
+message AirbornePosition {
+  uint32 source_id = 1; // Metadata
+  double latitude = 2;
+  double longitude = 3;
+}
+
+message AirborneVelocity {
+  uint32 source_id = 1; // Metadata
+  uint32 speed = 2;
+  float heading = 3;
+  sint32 vertical_speed = 4;
+  SpeedType speed_type = 5;
+
+  enum SpeedType {
+    GROUND_SPEED = 0; // GS
+    INDICATED_AIR_SPEED = 1; // IAS
+    TRUE_AIR_SPEED = 2; // TAS
+  }
+}
+
+message AircraftIdentification {
+  uint32 source_id = 1; // Metadata
+  string call_sign = 2;
+  uint32 category = 3;
 }
