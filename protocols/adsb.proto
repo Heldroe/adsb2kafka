@@ -1,0 +1,6 @@
+syntax = "proto3";
+
+message ADSBFrame {
+  uint32 source_id = 1;
+  bytes frame_data = 2; // Frame data, expected to be 14 bytes
+}
