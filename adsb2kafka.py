@@ -9,8 +9,21 @@ from confluent_kafka import Producer
 import pyModeS as pms
 from pyModeS.extra.tcpclient import TcpClient
 
+from adsb_protobufs.protocols import adsb_pb2
 
-parser = argparse.ArgumentParser(description="beast2kafka: publish Beast protocol frames into Kafka.")
+
+def source_id(value):
+    # Ensure the source ID is valid
+    try:
+        int_value = int(value)
+        if int_value < 0 or int_value > 0xFFFFFFFF:
+            raise argparse.ArgumentTypeError(f"Source ID must be positive or 0 and fit in 32 bits.")
+        return int_value
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"Source ID could not be parsed as integer.")
+
+
+parser = argparse.ArgumentParser(description="adsb2kafka: publish ADSB protocol frames into Kafka.")
 
 parser.add_argument(
     '--bootstrap-servers',
@@ -36,6 +49,11 @@ parser.add_argument(
     default=30005,
     help='Beast server port.',
 )
+parser.add_argument(
+    '--source-id',
+    type=source_id,
+    help='Optional source ID to be sent in Kafka messages, 32 bit integer.',
+)
 
 args = parser.parse_args()
 
@@ -59,9 +77,16 @@ class ADSBClient(TcpClient):
             if pms.crc(msg) !=0: # CRC failure
                 continue
 
+            frame = adsb_pb2.ADSBFrame()
+            if args.source_id is not None:
+                frame.source_id = args.source_id
+            frame.frame_data = bytes.fromhex(msg)
+
+            print(frame.SerializeToString(), len(frame.SerializeToString()))
+
             self.kafka_producer.produce(
                 topic=self.kafka_topic,
-                value=bytes.fromhex(msg),
+                value=frame.SerializeToString(),
                 key=bytes.fromhex(pms.adsb.icao(msg)),
                 timestamp=round(timestamp * 1000),
             )

@@ -1,2 +1,4 @@
 confluent-kafka==2.8.0
 pyModeS==2.19
+
+adsb-protobufs @ git+https://github.com/Heldroe/adsb2kafka.git@90a78f65ed2c389e1394eb3462b0015e0531aede#subdirectory=libs/python/adsb-protobufs
